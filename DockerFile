@@ -1,0 +1,23 @@
+# Use an official OpenJDK image as a base image
+FROM openjdk:17-jdk-alpine
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the Maven build file to the container and download dependencies (this will cache dependencies)
+COPY pom.xml .
+
+# Download all necessary dependencies
+RUN mvn dependency:go-offline
+
+# Copy the entire project to the container
+COPY . .
+
+# Package the application
+RUN mvn clean package -DskipTests
+
+# Expose port 8080 to the outside world
+EXPOSE 8080
+
+# Run the Spring Boot application
+CMD ["java", "-jar", "target/careercraftpro-0.0.1-SNAPSHOT.jar"]
